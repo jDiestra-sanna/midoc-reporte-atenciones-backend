@@ -7,8 +7,10 @@ export declare class AtencionService {
     constructor(atencionRepo: Repository<Atencion>, configService: ConfigService);
     getByDate(date: Date): Promise<Atencion[]>;
     getByRange(start: string, end: string): Promise<Atencion[]>;
-    sendWeeklyReport(): Promise<void>;
+    sendDailyReport(): Promise<void>;
     sendExcelReport(start: string, end: string): Promise<{
         status: string;
     }>;
+    private writeActivityLog;
+    private writeMailLog;
 }

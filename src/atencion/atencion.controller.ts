@@ -6,6 +6,12 @@ import * as moment from 'moment';
 export class AtencionController {
   constructor(private service: AtencionService) {}
 
+  /**
+   * GET /atencion
+   * Permite consultar atenciones por:
+   * - Una fecha específica con `date`
+   * - Un rango de fechas con `start` y `end`
+   */
   @Get()
   async get(
     @Query('date') date?: string,
@@ -20,6 +26,10 @@ export class AtencionController {
     return this.service.getByDate(d);
   }
 
+  /**
+   * POST /atencion/enviar-reporte-excel
+   * Recibe `start` y `end` en el body para generar y enviar un archivo Excel por correo
+   */
   @Post('enviar-reporte-excel')
   async enviarReporte(@Body() body: { start: string; end: string }) {
     const { start, end } = body;

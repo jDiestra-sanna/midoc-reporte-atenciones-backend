@@ -1,44 +1,50 @@
 {
-  "name": "backend",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
+  "name": "backend",                     // Nombre del proyecto
+  "version": "0.0.1",                    // Versión actual
+  "description": "",                     // Descripción (puedes completarlo)
+  "author": "",                          // Autor (recomendado para proyectos compartidos)
+  "private": true,                       // Evita publicación accidental en npm
   "license": "UNLICENSED",
+
   "scripts": {
-    "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    // Scripts para desarrollo y producción
+    "build": "nest build",                          // Compila TypeScript a JavaScript (output en /dist)
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",  // Formatea código con Prettier
+    "start": "nest start",                          // Inicia app normalmente
+    "start:dev": "nest start --watch",              // Inicia app con recarga automática
+    "start:debug": "nest start --debug --watch",    // Inicia con modo debug y recarga
+    "start:prod": "node dist/main",                 // Inicia versión compilada para producción
+
+    // Linter y pruebas
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",  // Aplica correcciones de ESLint
+    "test": "jest",                                  // Ejecuta pruebas unitarias
+    "test:watch": "jest --watch",                    // Modo interactivo de test
+    "test:cov": "jest --coverage",                   // Cobertura de pruebas
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json" // Pruebas end-to-end
   },
+
   "dependencies": {
+    // Framework principal y módulos de utilidad
     "@nestjs/common": "^11.0.1",
-    "@nestjs/config": "^4.0.2",
+    "@nestjs/config": "^4.0.2",             // Para usar .env de forma limpia
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
-    "@nestjs/schedule": "^5.0.1",
-    "@nestjs/typeorm": "^11.0.0",
-    "dotenv": "^16.5.0",
-    "moment": "^2.30.1",
-    "nodemailer": "^6.10.1",
-    "pg": "^8.14.1",
-    "reflect-metadata": "^0.2.2",
+    "@nestjs/schedule": "^5.0.1",           // Tareas programadas (cron jobs)
+    "@nestjs/typeorm": "^11.0.0",           // ORM para PostgreSQL
+    "dotenv": "^16.5.0",                    // Carga variables de entorno
+    "moment": "^2.30.1",                    // Manejo de fechas
+    "nodemailer": "^6.10.1",                // Envío de correos
+    "pg": "^8.14.1",                        // Cliente PostgreSQL
+    "reflect-metadata": "^0.2.2",           // Necesario para TypeORM
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.22",
-    "xlsx": "^0.18.5"
+    "typeorm": "^0.3.22",                   // ORM para bases de datos
+    "xlsx": "^0.18.5"                       // Generación de archivos Excel
   },
+
   "devDependencies": {
-    "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.18.0",
-    "@nestjs/cli": "^11.0.0",
+    // Herramientas de desarrollo y pruebas
+    "@nestjs/cli": "^11.0.0",               // CLI oficial NestJS
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
     "@swc/cli": "^0.6.0",
@@ -54,7 +60,7 @@
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.0.0",
     "jest": "^29.7.0",
-    "prettier": "^3.4.2",
+    "prettier": "^3.4.2",                  
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
@@ -64,20 +70,16 @@
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },
+
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
+    // Configuración para pruebas
+    "moduleFileExtensions": ["js", "json", "ts"],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
+    "collectCoverageFrom": ["**/*.(t|j)s"],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }

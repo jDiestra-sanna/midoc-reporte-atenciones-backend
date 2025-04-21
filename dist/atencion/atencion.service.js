@@ -22,6 +22,8 @@ const config_1 = require("@nestjs/config");
 const moment = require("moment");
 const nodemailer = require("nodemailer");
 const XLSX = require("xlsx");
+const fs = require("fs");
+const path = require("path");
 let AtencionService = class AtencionService {
     atencionRepo;
     configService;
@@ -32,6 +34,7 @@ let AtencionService = class AtencionService {
     async getByDate(date) {
         const start = moment(date).startOf('day').toDate();
         const end = moment(date).endOf('day').toDate();
+        this.writeActivityLog(`Consulta única ejecutada para fecha: ${moment(date).format('YYYY-MM-DD')}`);
         return this.atencionRepo.find({
             where: {
                 clasificacion_pac: 62,
@@ -43,6 +46,7 @@ let AtencionService = class AtencionService {
     async getByRange(start, end) {
         const startDate = new Date(start);
         const endDate = new Date(new Date(end).setHours(23, 59, 59, 999));
+        this.writeActivityLog(`Consulta de rango ejecutada: ${start} al ${end}`);
         return this.atencionRepo.find({
             where: {
                 clasificacion_pac: 62,
@@ -51,16 +55,17 @@ let AtencionService = class AtencionService {
             order: { fec_ate: 'DESC' },
         });
     }
-    async sendWeeklyReport() {
-        const start = moment().subtract(7, 'days').startOf('day');
+    async sendDailyReport() {
+        const start = moment().subtract(1, 'day').startOf('day');
         const end = moment().subtract(1, 'day').endOf('day');
         await this.sendExcelReport(start.toISOString(), end.toISOString());
     }
     async sendExcelReport(start, end) {
+        const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
         const data = await this.getByRange(start, end);
-        const headers = [
-            ['Cod Ate.', 'Estado Ate.', 'Fecha Ate.', 'Paciente', 'Boleta', 'Monto', 'Mét. Pago', 'Num. Operación', 'Convenio']
-        ];
+        const headers = [[
+                'Cod Ate.', 'Estado Ate.', 'Fecha Ate.', 'Paciente', 'Boleta', 'Monto', 'Mét. Pago', 'Num. Operación', 'Convenio'
+            ]];
         const rows = data.map(row => [
             row.cod_ate,
             row.cm_estado,
@@ -79,38 +84,61 @@ let AtencionService = class AtencionService {
         const user = this.configService.get('MAIL_USER');
         const pass = this.configService.get('MAIL_PASS');
         if (!user || !pass) {
+            this.writeActivityLog(`[${timestamp}] ❌ ERROR: Faltan credenciales de correo`);
+            this.writeMailLog(`[${timestamp}] ❌ ERROR: Faltan credenciales de correo`);
             throw new common_1.InternalServerErrorException('Credenciales de correo no configuradas correctamente');
         }
+        const recipients = 'joseph.diestra@sanna.pe, erick.huapaya@sanna.pe, gaby.chirimia@sanna.pe, kati.loayza@sanna.pe, maria.tejada@sanna.pe';
         const transporter = nodemailer.createTransport({
             service: 'gmail',
-            auth: {
-                user,
-                pass,
-            },
+            auth: { user, pass },
         });
-        await transporter.sendMail({
-            from: user,
-            to: 'joseph.diestra@sanna.pe, erick.huapaya@sanna.pe, gaby.chirimia@sanna.pe, kati.loayza@sanna.pe, maria.tejada@sanna.pe',
-            subject: `Reporte de Atenciones del ${moment(start).format('DD/MM/YYYY')} al ${moment(end).format('DD/MM/YYYY')}`,
-            text: 'Adjunto se encuentra el reporte de atenciones en formato Excel.',
-            attachments: [
-                {
-                    filename: `reporte_atenciones_${moment(start).format('YYYYMMDD')}_a_${moment(end).format('YYYYMMDD')}.xlsx`,
-                    content: buffer,
-                    contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                },
-            ],
-        });
+        try {
+            await transporter.sendMail({
+                from: user,
+                to: recipients,
+                subject: `📊 Reporte de Atenciones - ${moment(start).format('DD/MM/YYYY')}`,
+                text: 'Adjunto se encuentra el reporte de atenciones en formato Excel.',
+                attachments: [{
+                        filename: `reporte_atenciones_${moment(start).format('YYYYMMDD')}.xlsx`,
+                        content: buffer,
+                        contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    }],
+            });
+            this.writeMailLog(`[${timestamp}] ✅ CORREO enviado a: ${recipients}`);
+            this.writeActivityLog(`[${timestamp}] ✅ ENVÍO de reporte exitoso para el rango ${start} - ${end}`);
+        }
+        catch (error) {
+            this.writeMailLog(`[${timestamp}] ❌ ERROR al enviar: ${error.message}`);
+            this.writeActivityLog(`[${timestamp}] ❌ FALLO en envío de correo: ${error.message}`);
+            throw new common_1.InternalServerErrorException('Error al enviar el correo');
+        }
         return { status: 'Correo enviado' };
+    }
+    writeActivityLog(message) {
+        const date = moment().format('YYYY-MM-DD');
+        const logDir = path.join(__dirname, '..', '..', 'logs', 'activity');
+        const logFile = path.join(logDir, `activity-${date}.log`);
+        if (!fs.existsSync(logDir))
+            fs.mkdirSync(logDir, { recursive: true });
+        fs.appendFileSync(logFile, `${message}\n`);
+    }
+    writeMailLog(message) {
+        const date = moment().format('YYYY-MM-DD');
+        const logDir = path.join(__dirname, '..', '..', 'logs', 'mail');
+        const logFile = path.join(logDir, `mail-${date}.log`);
+        if (!fs.existsSync(logDir))
+            fs.mkdirSync(logDir, { recursive: true });
+        fs.appendFileSync(logFile, `${message}\n`);
     }
 };
 exports.AtencionService = AtencionService;
 __decorate([
-    (0, schedule_1.Cron)('0 6 * * 1'),
+    (0, schedule_1.Cron)('0 6 * * *'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], AtencionService.prototype, "sendWeeklyReport", null);
+], AtencionService.prototype, "sendDailyReport", null);
 exports.AtencionService = AtencionService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(atencion_entity_1.Atencion)),

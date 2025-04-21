@@ -3,9 +3,9 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 
 async function bootstrap() {
-  dotenv.config(); // 👈 Carga las variables del archivo .env
+  dotenv.config(); // Carga variables de entorno desde .env
   const app = await NestFactory.create(AppModule);
-  app.enableCors(); // Permite que el frontend pueda hacer llamadas
-  await app.listen(3000);
+  app.enableCors(); // Permite solicitudes desde el frontend
+  await app.listen(3000); // Inicia el servidor en el puerto 3000
 }
 bootstrap();
