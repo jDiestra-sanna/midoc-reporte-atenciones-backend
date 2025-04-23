@@ -50,12 +50,13 @@ export class AtencionService {
   }
 
   // Envío automático diario a las 6am con reporte del día anterior
-  @Cron('0 6 * * *')
+  @Cron('0 9 * * *')
   async sendDailyReport() {
     const start = moment().subtract(1, 'day').startOf('day');
     const end = moment().subtract(1, 'day').endOf('day');
     await this.sendExcelReport(start.toISOString(), end.toISOString());
   }
+  
 
   // Envía el Excel por correo según un rango de fechas
   async sendExcelReport(start: string, end: string) {
