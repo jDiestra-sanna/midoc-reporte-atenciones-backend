@@ -88,7 +88,7 @@ let AtencionService = class AtencionService {
             this.writeMailLog(`[${timestamp}] ❌ ERROR: Faltan credenciales de correo`);
             throw new common_1.InternalServerErrorException('Credenciales de correo no configuradas correctamente');
         }
-        const recipients = 'joseph.diestra@sanna.pe, erick.huapaya@sanna.pe, gaby.chirimia@sanna.pe, kati.loayza@sanna.pe, maria.tejada@sanna.pe';
+        const recipients = 'joseph.diestra@sanna.pe, erick.huapaya@sanna.pe, gaby.chirimia@sanna.pe, kati.loayza@sanna.pe, maria.tejada@sanna.pe, bruno.salazar@sanna.pe';
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: { user, pass },

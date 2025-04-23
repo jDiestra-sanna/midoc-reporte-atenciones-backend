@@ -93,7 +93,7 @@ export class AtencionService {
       throw new InternalServerErrorException('Credenciales de correo no configuradas correctamente');
     }
 
-    const recipients = 'joseph.diestra@sanna.pe, erick.huapaya@sanna.pe, gaby.chirimia@sanna.pe, kati.loayza@sanna.pe, maria.tejada@sanna.pe';
+    const recipients = 'joseph.diestra@sanna.pe, erick.huapaya@sanna.pe, gaby.chirimia@sanna.pe, kati.loayza@sanna.pe, maria.tejada@sanna.pe, bruno.salazar@sanna.pe';
 
     // ✉️ Configura y envía el correo
     const transporter = nodemailer.createTransport({
